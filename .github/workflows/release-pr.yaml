@@ -74,6 +74,15 @@ jobs:
           RELEASE_DATE=$(date +%F)
           NEW_CHANGELOG_HEADER="## [v$NEW_VERSION] - $RELEASE_DATE"
           sed -i "/## \[Unreleased\]/a \\\n$NEW_CHANGELOG_HEADER" CHANGELOG.md
+      # Create pull request
+      - name: Create release pull request
+        id: create_pr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: release/${{ steps.calculate_new_version.outputs.NEW_VERSION }}
+          title: "Release: ${{ steps.calculate_new_version.outputs.NEW_VERSION }} Pull Request"
+          body: "This pull request contains the version bump from ${{ steps.get_current_version.outputs.CURRENT_VERSION }} to ${{ steps.calculate_new_version.outputs.NEW_VERSION }}. It was created automatically in the '${{ github.workflow }}' workflow triggered by ${{ github.triggering_actor }}."
+          base: main
       # Summarize results
       - name: Summarize job
         env:
