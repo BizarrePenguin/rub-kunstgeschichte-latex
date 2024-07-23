@@ -61,6 +61,13 @@ jobs:
             NEW_VERSION_PATCH=$(($NEW_VERSION_PATCH + 1))
           fi
           echo "NEW_VERSION=$NEW_VERSION_MAJOR.$NEW_VERSION_MINOR.$NEW_VERSION_PATCH" >> "$GITHUB_OUTPUT"
+      # Update version
+      - name: Tag version with l3build
+        working-directory: ./rub-kunstgeschichte
+        env:
+          NEW_VERSION: ${{ steps.calculate_new_version.outputs.NEW_VERSION }}
+        run: l3build tag $NEW_VERSION
+      # Summarize results
       - name: Summarize job
         env:
           NEW_VERSION: ${{ steps.calculate_new_version.outputs.NEW_VERSION }}
