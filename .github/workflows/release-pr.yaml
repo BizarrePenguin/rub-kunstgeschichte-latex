@@ -61,3 +61,7 @@ jobs:
             NEW_VERSION_PATCH=$(($NEW_VERSION_PATCH + 1))
           fi
           echo "NEW_VERSION=$NEW_VERSION_MAJOR.$NEW_VERSION_MINOR.$NEW_VERSION_PATCH" >> "$GITHUB_OUTPUT"
+      - name: Summarize job
+        env:
+          NEW_VERSION: ${{ steps.calculate_new_version.outputs.NEW_VERSION }}
+        run: echo "Created release PR for version $NEW_VERSION" >> $GITHUB_STEP_SUMMARY
