@@ -67,6 +67,13 @@ jobs:
         env:
           NEW_VERSION: ${{ steps.calculate_new_version.outputs.NEW_VERSION }}
         run: l3build tag $NEW_VERSION
+      - name: Tag version in CHANGELOG.md
+        env:
+          NEW_VERSION: ${{ steps.calculate_new_version.outputs.NEW_VERSION }}
+        run: |
+          RELEASE_DATE=$(date +%F)
+          NEW_CHANGELOG_HEADER="## [v$NEW_VERSION] - $RELEASE_DATE"
+          sed -i "/## \[Unreleased\]/a \\\n$NEW_CHANGELOG_HEADER" CHANGELOG.md
       # Summarize results
       - name: Summarize job
         env:
