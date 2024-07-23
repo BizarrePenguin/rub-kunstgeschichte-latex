@@ -1,0 +1,62 @@
+name: Upgrade version and create release PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version increment'
+        required: true
+        default: 'minor'
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+
+jobs:
+  create_release_pr:
+    runs-on: ubuntu-latest
+    container: registry.gitlab.com/islandoftex/images/texlive:TL2024-2024-05-19-full
+    permissions:
+      contents: write
+    steps:
+      # Check out the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      # Set up Git as github-actions bot
+      - name: Set up Git
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+      # Update version number
+      - name: Get current version number
+        id: get_current_version
+        working-directory: ./rub-kunstgeschichte
+        run: |
+          echo "CURRENT_VERSION=$(grep -Pzo '\\ProvidesClass\{rub-kunstgeschichte\}(.|\n)*?\[\d{4}-\d{2}-\d{2} v\K\d+\.\d+\.\d+' rub-kunstgeschichte.dtx | tr '\0' '\n')" >> "$GITHUB_OUTPUT"
+      - name: Extract MAJOR, MINOR and PATCH version numbers
+        id: extract_major_minor_patch
+        env:
+          VERSION_FULL: ${{ steps.get_current_version.outputs.CURRENT_VERSION }}
+        run: |
+          echo "VERSION_MAJOR=$(echo $VERSION_FULL | grep -Po '^\d+')" >> "$GITHUB_OUTPUT"
+          echo "VERSION_MINOR=$(echo $VERSION_FULL | grep -Po '^\d+\.\K\d+')" >> "$GITHUB_OUTPUT"
+          echo "VERSION_PATCH=$(echo $VERSION_FULL | grep -Po '^\d+\.\d+\.\K\d+')" >> "$GITHUB_OUTPUT"
+      - name: Calculate next version number
+        id: calculate_new_version
+        env:
+          NEW_VERSION_MAJOR: ${{ steps.extract_major_minor_patch.outputs.VERSION_MAJOR }}
+          NEW_VERSION_MINOR: ${{ steps.extract_major_minor_patch.outputs.VERSION_MINOR }}
+          NEW_VERSION_PATCH: ${{ steps.extract_major_minor_patch.outputs.VERSION_PATCH }}
+          VERSION_BUMP: ${{ github.event.inputs.version }}
+        run: |
+          if [ $VERSION_BUMP = "major" ]
+          then
+            NEW_VERSION_MAJOR=$(($NEW_VERSION_MAJOR + 1))
+          elif [ $VERSION_BUMP = "minor" ]
+          then
+            NEW_VERSION_MINOR=$(($NEW_VERSION_MINOR + 1))
+          else
+            NEW_VERSION_PATCH=$(($NEW_VERSION_PATCH + 1))
+          fi
+          echo "NEW_VERSION=$NEW_VERSION_MAJOR.$NEW_VERSION_MINOR.$NEW_VERSION_PATCH" >> "$GITHUB_OUTPUT"
