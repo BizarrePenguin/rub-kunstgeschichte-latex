@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     container: registry.gitlab.com/islandoftex/images/texlive:TL2024-2024-05-19-full
     permissions:
-      contents: write
+      pull-requests: write
     steps:
       # Check out the repository
       - name: Checkout repository
@@ -79,7 +79,6 @@ jobs:
         id: create_pr
         uses: peter-evans/create-pull-request@v6
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           branch: release/${{ steps.calculate_new_version.outputs.NEW_VERSION }}
           title: "Release: ${{ steps.calculate_new_version.outputs.NEW_VERSION }} Pull Request"
           body: "This pull request contains the version bump from ${{ steps.get_current_version.outputs.CURRENT_VERSION }} to ${{ steps.calculate_new_version.outputs.NEW_VERSION }}. It was created automatically in the '${{ github.workflow }}' workflow triggered by ${{ github.triggering_actor }}."
