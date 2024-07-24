@@ -88,7 +88,6 @@ jobs:
           branch: release/${{ steps.calculate_new_version.outputs.NEW_VERSION }}
           title: "Release: ${{ steps.calculate_new_version.outputs.NEW_VERSION }} Pull Request"
           body: "This pull request contains the version bump from ${{ steps.get_current_version.outputs.CURRENT_VERSION }} to ${{ steps.calculate_new_version.outputs.NEW_VERSION }}. It was created automatically in the '${{ github.workflow }}' workflow triggered by @${{ github.triggering_actor }}."
-          base: main
       # Summarize results
       - name: Summarize job
         env:
