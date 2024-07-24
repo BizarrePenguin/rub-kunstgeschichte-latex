@@ -87,10 +87,10 @@ jobs:
         with:
           branch: release/${{ steps.calculate_new_version.outputs.NEW_VERSION }}
           title: "Release: ${{ steps.calculate_new_version.outputs.NEW_VERSION }} Pull Request"
-          body: "This pull request contains the version bump from ${{ steps.get_current_version.outputs.CURRENT_VERSION }} to ${{ steps.calculate_new_version.outputs.NEW_VERSION }}. It was created automatically in the '${{ github.workflow }}' workflow triggered by ${{ github.triggering_actor }}."
+          body: "This pull request contains the version bump from ${{ steps.get_current_version.outputs.CURRENT_VERSION }} to ${{ steps.calculate_new_version.outputs.NEW_VERSION }}. It was created automatically in the '${{ github.workflow }}' workflow triggered by @${{ github.triggering_actor }}."
           base: main
       # Summarize results
       - name: Summarize job
         env:
           NEW_VERSION: ${{ steps.calculate_new_version.outputs.NEW_VERSION }}
-        run: echo "Created release PR for version $NEW_VERSION" >> $GITHUB_STEP_SUMMARY
+        run: echo "Created [release PR](${{ steps.create_pr.outputs.pull-request-url }}) for version $NEW_VERSION" >> $GITHUB_STEP_SUMMARY
