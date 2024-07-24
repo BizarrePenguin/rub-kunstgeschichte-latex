@@ -75,7 +75,12 @@ jobs:
           RELEASE_DATE=$(date +%F)
           NEW_CHANGELOG_HEADER="## [v$NEW_VERSION] - $RELEASE_DATE"
           sed -i "/## \[Unreleased\]/a \\\n$NEW_CHANGELOG_HEADER" CHANGELOG.md
-      # Create pull request
+      # Commit changes and create pull request
+      - name: Commit version bump changes
+        id: commit_version_bump
+        run: |
+          git commit -a -m "Automated version bump to v${{ steps.calculate_new_version.outputs.NEW_VERSION }}"
+          git push
       - name: Create release pull request
         id: create_pr
         uses: peter-evans/create-pull-request@v6
