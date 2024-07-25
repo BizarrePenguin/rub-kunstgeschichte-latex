@@ -81,13 +81,21 @@ jobs:
         run: |
           git commit -a -m "Automated version bump to v${{ steps.calculate_new_version.outputs.NEW_VERSION }}"
           git push
+      - name: Create release branch
+        id: create_release_branch
+        env:
+          RELEASE_BRANCH: release/${{ steps.calculate_new_version.outputs.NEW_VERSION }}
+        run: |
+          git switch --create $RELEASE_BRANCH
+          git push -u origin $RELEASE_BRANCH
       - name: Create release pull request
         id: create_pr
-        uses: peter-evans/create-pull-request@v6
-        with:
-          branch: release/${{ steps.calculate_new_version.outputs.NEW_VERSION }}
-          title: "Release: ${{ steps.calculate_new_version.outputs.NEW_VERSION }} Pull Request"
-          body: "This pull request contains the version bump from ${{ steps.get_current_version.outputs.CURRENT_VERSION }} to ${{ steps.calculate_new_version.outputs.NEW_VERSION }}. It was created automatically in the '${{ github.workflow }}' workflow triggered by @${{ github.triggering_actor }}."
+        run: gh pr create --base main --head $RELEASE_BRANCH --title "$PR_TITLE" --body "$PR_BODY"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_BRANCH: release/${{ steps.calculate_new_version.outputs.NEW_VERSION }}
+          PR_TITLE: "Release: ${{ steps.calculate_new_version.outputs.NEW_VERSION }} Pull Request"
+          PR_BODY: "This pull request contains the version bump from ${{ steps.get_current_version.outputs.CURRENT_VERSION }} to ${{ steps.calculate_new_version.outputs.NEW_VERSION }}. It was created automatically in the '${{ github.workflow }}' workflow triggered by @${{ github.triggering_actor }}."
       # Summarize results
       - name: Summarize job
         env:
