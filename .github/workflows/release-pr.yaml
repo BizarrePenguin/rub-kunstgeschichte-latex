@@ -16,7 +16,6 @@ on:
 jobs:
   create_release_pr:
     runs-on: ubuntu-latest
-    container: registry.gitlab.com/islandoftex/images/texlive:TL2024-2024-05-19-full
     permissions:
       contents: write
       pull-requests: write
@@ -64,10 +63,14 @@ jobs:
           echo "new_version=$NEW_VERSION_MAJOR.$NEW_VERSION_MINOR.$NEW_VERSION_PATCH" >> "$GITHUB_OUTPUT"
       # Update version
       - name: Tag version with l3build
-        working-directory: ./rub-kunstgeschichte
-        env:
-          NEW_VERSION: ${{ steps.calculate_new_version.outputs.new_version }}
-        run: l3build tag $NEW_VERSION
+        uses: addnab/docker-run-action@v3
+        with:
+          registry: registry.gitlab.com
+          image: islandoftex/images/texlive:TL2024-2024-05-19-full
+          options: -v ${{ github.workspace }}/rub-kunstgeschichte:/workspace -e NEW_VERSION=${{ steps.calculate_new_version.outputs.new_version }}
+          run: |
+            cd /workspace
+            l3build tag $NEW_VERSION
       - name: Tag version in CHANGELOG.md
         env:
           NEW_VERSION: ${{ steps.calculate_new_version.outputs.new_version }}
