@@ -90,12 +90,12 @@ jobs:
           git push -u origin $RELEASE_BRANCH
       - name: Create release pull request
         id: create_pr
-        run: echo "pull-request-url=$(gh pr create --base main --head $RELEASE_BRANCH --title "$PR_TITLE" --body "$PR_BODY")" >> "$GITHUB_OUTPUT"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_BRANCH: release/${{ steps.calculate_new_version.outputs.new_version }}
-          PR_TITLE: "Release: ${{ steps.calculate_new_version.outputs.new_version }} Pull Request"
-          PR_BODY: "This pull request contains the version bump from ${{ steps.get_current_version.outputs.CURRENT_VERSION }} to ${{ steps.calculate_new_version.outputs.new_version }}. It was created automatically in the '${{ github.workflow }}' workflow triggered by @${{ github.triggering_actor }}."
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: release/${{ steps.calculate_new_version.outputs.new_version }}
+          base: main
+          title: "Release: ${{ steps.calculate_new_version.outputs.new_version }} Pull Request"
+          body: "This pull request contains the version bump from ${{ steps.get_current_version.outputs.current_version }} to ${{ steps.calculate_new_version.outputs.new_version }}. It was created automatically in the '${{ github.workflow }}' workflow triggered by @${{ github.triggering_actor }}."
       # Summarize results
       - name: Summarize job
         env:
