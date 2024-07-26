@@ -32,9 +32,10 @@ jobs:
       # Update version number
       - name: Get current version number
         id: get_current_version
-        working-directory: ./rub-kunstgeschichte
-        run: |
-          echo "current_version=$(grep -Pzo '\\ProvidesClass\{rub-kunstgeschichte\}(.|\n)*?\[\d{4}-\d{2}-\d{2} v\K\d+\.\d+\.\d+' rub-kunstgeschichte.dtx | tr '\0' '\n')" >> "$GITHUB_OUTPUT"
+        uses: ./.github/actions/get-release-version
+        with:
+          file: ./rub-kunstgeschichte/rub-kunstgeschichte.dtx
+          class-name: rub-kunstgeschichte
       - name: Extract MAJOR, MINOR and PATCH version numbers
         id: extract_major_minor_patch
         env:
