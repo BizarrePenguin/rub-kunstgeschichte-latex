@@ -7,8 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.0] - 2024-07-25
+
 ### Added
 
+- Bibliography support by auto-loading of biblatex package with authortitle-dw style from biblatex-dw package
+- Clickable links and references
 - Avoid paragraph indentation
 
 ## [v0.1.0] - 2024-05-26
