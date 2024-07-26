@@ -13,5 +13,5 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - run: |
-        echo "current-version=$(grep -Pzo '\\ProvidesClass\{${{ inputs.class-name }}\}(.|\n)*?\[\d{4}-\d{2}-\d{2} v\K\d+\.\d+\.\d+' ${{ inputs.file }} | tr '\0' '\n')" >> "$GITHUB_OUTPUT"
+    - run: echo "current-version=$(grep -Pzo '\\ProvidesClass\{${{ inputs.class-name }}\}(.|\n)*?\[\d{4}-\d{2}-\d{2} v\K\d+\.\d+\.\d+' ${{ inputs.file }} | tr '\0' '\n')" >> "$GITHUB_OUTPUT"
+      shell: bash
